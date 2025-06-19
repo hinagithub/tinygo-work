@@ -16,6 +16,11 @@ Go言語のコードを小さなバイナリにコンパイル
 - -target: ターゲット
 - -size: サイズ
 
+ターゲットに指定できるのは他だとたとえば
+- pico (Raspberry Pi Pico)
+
+など。
+
 #### 用語解説
 - uf2: USB Flashing Format
 Microsoftが開発したファイルフォーマットで、特にマイクロコントローラへのファームウェア書き込みを容易にするために設計されました。Raspberry Pi Picoや一部のAdafruitボードなどで広く採用されています。
