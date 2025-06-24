@@ -9,3 +9,28 @@
 - ATSAMD51: WioTerminalで使われてるマイコン。さまざまなペリフェラルを持つ。
 
 
+### GPIO
+
+Wio Terminalには、GPIO (General Purpose Input/Output) という、一般的な用途に使える電気の入出力ピンがたくさんあります。
+
+例えるなら、**Wio Terminalの「手足」や「感覚器官」**のようなものです。
+
+入力 (Input): ボタンが押されたか（ON/OFF）、センサーから光の強さ（値）が送られてきたか、などをWio Terminalが**「感じ取る」**ために使います。
+出力 (Output): LEDを光らせる（ON/OFF）、モーターを回す（ON/OFF）、ブザーを鳴らす、などをWio Terminalが**「何かをする」**ために使います。
+これらのGPIOピンを使うことで、Wio Terminalにさまざまな電子部品（センサー、モーター、LEDなど）を接続して、外部の世界とやり取りするプログラムを作ることができます。
+
+↓この回路は、Wio Terminalのデジタル出力ピン（GPIOピン）である D0ピン を使って、LEDを点灯・消灯させるものです。
+
+<img width="294" alt="Image" src="https://github.com/user-attachments/assets/4f0f3e2d-0b03-4fdc-a38d-b600d61da552" />
+
+VCC3v3 -> (制御するMCUのGPIOピン) -> R52（電流制限） -> USER LED（光る） -> GND
+という流れで電気が流れます。
+
+
+USER LED回路の一般的な動作イメージ
+- VCC3v3: これは電源のプラス側（3.3V）です。
+マイクロコントローラ (MCU) のGPIOピン: USER LEDは、通常、MCUの汎用入出力（GPIO）ピンに接続されています。MCUがこのGPIOピンを「HIGH」（3.3Vに近い状態）または「LOW」（0V/GNDに近い状態）に設定することでLEDのオン/オフを制御します。
+- R52（抵抗器）: LEDを直列に接続する場合、電流制限抵抗として機能します。LEDは低い順方向電圧（例: 赤色LEDで約2V）で動作し、過剰な電流が流れると壊れてしまいます。R52は、LEDに流れる電流を適切な値に制限し、LEDを保護する役割を担います。
+- USER LED: R52を通過した電流がLEDに流れ込み、LEDが発光します。
+- GND (グラウンド): 右上の3本線。回路の負極（0V）です。電流はLEDを通過した後、GNDに戻ります。
+
