@@ -1,4 +1,4 @@
-用語
+## 用語
 
 - **ペリフェラル**: マイコンに内蔵された機能。
 
@@ -10,7 +10,7 @@
 
 ---
 
-### GPIO
+## GPIOについて
 
 Wio Terminalには、GPIO (General Purpose Input/Output) という、一般的な用途に使える電気の入出力ピンがたくさんあります。
 
@@ -22,6 +22,8 @@ Wio Terminalには、GPIO (General Purpose Input/Output) という、一般的�
 これらのGPIOピンを使うことで、Wio Terminalにさまざまな電子部品（センサー、モーター、LEDなど）を接続して、外部の世界とやり取りするプログラムを作ることができます。
 
 ---
+
+## 出力
 
 #### LED点灯回路例
 
@@ -70,4 +72,15 @@ LEDは **P15番** に接続されています。
 | TP   | テストポイント (Test Point) | TP1 |
 | VR   | 可変抵抗器 (Variable Resistor - ポテンショメータ) | VR1 |
 | Z    | ツェナーダイオード、インピーダンス素子 | Z1 |
+
+
+
+## 入力
+
+なんでBUTTON3だけB始まりのアルファベットなんだろ？
+
+<img width="708" alt="Image" src="https://github.com/user-attachments/assets/04de1cac-7b2a-44af-9df7-86fa2d21bf4a" />
+
+
+> Buttonこれは、回路図やピン配置図でよく見られる、物理的なコネクタやバスのグループ分け、または特定の機能ブロックの区別を示している可能性が高いです。
 
