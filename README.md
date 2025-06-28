@@ -1,18 +1,32 @@
-#### VSCodeの設定
-- .settings.jsonを編集
-https://tinygo.org/docs/guides/ide-integration/vscode/
+# TinyGo組み込み開発学習リポジトリ
 
-・・・デフォルトではmachine.LEDが見つからないなど上手く動かなかったのでGOROOTを書き換え
+書籍「基礎から学ぶ TinyGoの組込み開発」 (C&R研究所) を読みながら手を動かしてみた学習記録のリポジトリ
 
-TINYGOROOTを調べる
-```
-tinygo-work >>>tinygo env TINYGOROOT
-/usr/local/Cellar/tinygo/0.37.0
-```
+## 参考書籍
+- [基礎から学ぶ TinyGoの組込み開発](https://github.com/sago35/tinygobook) (C&R研究所)
 
-settings.jsonに設定
-```
-"GOROOT": "/usr/local/Cellar/tinygo/0.37.0",
+## よく使うコマンド
+
+### ビルド
+```bash
+tinygo build -o hello.uf2 -target wioterminal -size short main.go
 ```
 
-- コマンドパレットでTinyGo targetを選択 > Ardinoを選択
+### フラッシュ書き込み
+```bash
+tinygo flash --target wioterminal
+```
+
+### シリアル通信監視
+```bash
+# minicomを使用
+minicom -D /dev/tty.usbmodem14301
+
+# TinyGo monitorを使用（推奨）
+tinygo monitor --target wioterminal
+```
+
+## メモ
+
+### VSCodeでコード補完が効かない(machine.LEDなど)
+`.vscode/settings.json`でGOROOTをTinyGoのパスに設定して解決
