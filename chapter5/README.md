@@ -94,3 +94,56 @@ LEDは **P15番** に接続されています。
 
 > Buttonこれは、回路図やピン配置図でよく見られる、物理的なコネクタやバスのグループ分け、または特定の機能ブロックの区別を示している可能性が高いです。
 
+
+
+## minicomの設定
+
+minicomで使うポートとwioterminalで使うポートを揃える必要がある？
+以下で設定を開く
+
+
+
+```
+minicom -s
+```
+
+```
+
+            +-----[configuration]------+
+            | Filenames and paths      |
+            | File transfer protocols  |
+            | Serial port setup        |
+            | Modem and dialing        |
+            | Screen                   |
+            | Keyboard and Misc        |
+            | Save setup as dfl        |
+            | Save setup as..          |
+            | Exit                     |
+            | Exit from Minicom        |
+            +--------------------------+
+```
+Serial port setupを選択
+
+```
+    +-----------------------------------------------------------------------+
+    | A -    Serial Device      : /dev/modem                                |
+    | B - Lockfile Location     : /usr/local/Cellar/minicom/2.10/var        |
+    | C -   Callin Program      :                                           |
+    | D -  Callout Program      :                                           |
+    | E -    Bps/Par/Bits       : 115200 8N1                                |
+    | F - Hardware Flow Control : No                                        |
+    | G - Software Flow Control : No                                        |
+    | H -     RS485 Enable      : No                                        |
+    | I -   RS485 Rts On Send   : No                                        |
+    | J -  RS485 Rts After Send : No                                        |
+    | K -  RS485 Rx During Tx   : No                                        |
+    | L -  RS485 Terminate Bus  : No                                        |
+    | M - RS485 Delay Rts Before: 0                                         |
+    | N - RS485 Delay Rts After : 0                                         |
+    |                                                                       |
+    |    Change which setting?                                              |
+    +-----------------------------------------------------------------------+
+```
+
+A Serial Deviceが `/dev/modem`になっているのでここを直してみる
+
