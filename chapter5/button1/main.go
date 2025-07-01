@@ -12,7 +12,11 @@
 
 package main
 
-import "machine"
+import (
+	"fmt"
+	"machine"
+	"time"
+)
 
 func main() {
 
@@ -50,6 +54,11 @@ func main() {
 	led.Configure(machine.PinConfig{Mode: machine.PinOutput})
 
 	for {
+
+		// ボタンは初期状態でHigh(ture)、押した状態でLow(false)になる「プルアップ入力」
+		fmt.Println(button1.Get())
+		// ボタンを押すとLEDが消灯する
 		led.Set(button1.Get())
+		time.Sleep(3 * time.Second)
 	}
 }
