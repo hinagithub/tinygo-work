@@ -150,3 +150,19 @@ Serial port setupを選択
 
 A Serial Deviceが `/dev/modem`になっているのでここを直してみる
 
+
+---
+
+# PWM
+
+## TCC
+Timer/Counter for Controlの略
+
+## デューティー比
+
+パルスが「オン（HIGH）」になっている時間の、周期全体に対する割合のこと。
+明るさや音量などはこの仕組みで制御されている
+![Image](https://github.com/user-attachments/assets/48ae139d-1c70-412b-926a-c252b7c351df)
+
+ディーティー比が高い = オン(High)になっている割合が高い = モニタが明るい
+
