@@ -203,3 +203,38 @@ pwm.Set(channelA, pwm.Top()/2)  // ブザー: 50%
 pwm.Set(channelB, pwm.Top()/4)  // LED: 25%明度  
 pwm.Set(channelC, pwm.Top()*3/4) // モーター: 75%速度
 ```
+
+## // I2C
+Inter Integrated Circuit 
+ATSUMD51ではSERCOMというペリフェラル名
+2本の線だけでデータ通信ができる
+複数のデバイスを同じバス（線）で接続可能
+マスター・スレーブ方式で通信
+
+```
+Wio Terminal (マスター)
+├── SDA (データ線) ──┬── センサー1 (スレーブ)
+└── SCL (クロック線) ─┴── センサー2 (スレーブ)
+                      └── ディスプレイ (スレーブ)
+```
+
+- SDA: Serial Data Line (データ)
+- SCL: Serial Clock Line (クロック)
+
+#### I2Cの主な用途:
+
+センサーデータの読み取り (温度、湿度、加速度など)
+ディスプレイ制御 (OLED、LCDなど)
+時計機能 (RTC)
+データ保存 (EEPROM)
+I/O拡張 (ピン数の不足を補う)
+
+接続できるデバイス例
+- センサー類
+- 温湿度センサー (SHT30, DHT22など)
+- 加速度センサー (MPU6050など)
+- 光センサー (BH1750など)
+- 圧力センサー (BMP280など)
+- ディスプレイ
+- OLED (SSD1306など)
+- LCD (PCF8574経由)
