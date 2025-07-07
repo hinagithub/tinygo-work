@@ -166,3 +166,40 @@ Timer/Counter for Controlの略
 
 ディーティー比が高い = オン(High)になっている割合が高い = モニタが明るい
 
+## PWM
+Pluse Width Modulation
+
+段階調節をして出力したい時に使う
+machine.LEDだとON/OFFだけしか制御できないがpwmを使うと薄く点灯したりできる
+
+## チャンネル
+チャンネル = マイコン内部のPWM出力回路 ピン = 外部デバイスとの接続点
+
+```
+マイコン内部:
+TCC0 (PWMコントローラ) 
+├── Channel A ──→ 物理ピン1 ──→ BUZZER_CTR
+├── Channel B ──→ 物理ピン2 ──→ LED_PIN  
+├── Channel C ──→ 物理ピン3 ──→ MOTOR_PIN
+└── Channel D ──→ 物理ピン4 ──→ SERVO_PIN
+```
+
+・・・なぜチャンネルが必要？
+ハードウェアの制約
+1つのPWMコントローラで複数のピンを同時制御
+各ピンは異なるチャンネルに割り当てられている
+同じ周波数でもデューティ比は個別設定可能
+
+例えば以下のようにブザーを鳴らしながらLEDを光らせるような時にチャンネルを使い分ける
+
+```
+// より実用的な例: ブザー + LED + モーター
+channelA, _ := pwm.Channel(machine.BUZZER_CTR) // 内蔵ブザー
+channelB, _ := pwm.Channel(machine.LED_PIN)    // LED明度制御
+channelC, _ := pwm.Channel(machine.MOTOR_PIN)  // モーター速度制御
+
+pwm.SetPeriod(1000) // 1kHz
+pwm.Set(channelA, pwm.Top()/2)  // ブザー: 50%
+pwm.Set(channelB, pwm.Top()/4)  // LED: 25%明度  
+pwm.Set(channelC, pwm.Top()*3/4) // モーター: 75%速度
+```
