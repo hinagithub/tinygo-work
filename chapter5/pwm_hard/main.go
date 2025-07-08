@@ -29,7 +29,8 @@ func main() {
 	for {
 		pwm.SetPeriod(1e9 / notes[i])
 		pwm.Set(channelA, pwm.Top()/2)
-		select {}
+		time.Sleep(100 * time.Millisecond)
+		pwm.Set(channelA, 0)
 		i = (i + 1) % len(notes)
 	}
 }
