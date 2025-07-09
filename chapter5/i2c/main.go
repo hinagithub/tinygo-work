@@ -44,24 +44,28 @@ func main() {
 		x := readAcceleration(data[0], data[1])
 		y := readAcceleration(data[2], data[3])
 		z := readAcceleration(data[4], data[5])
-
-		fmt.Printf("X:%6.2f Y:%6.2f Z:%6.2f", x, y, z)
-
+		fmt.Printf("X:%6.2f Y:%6.2f Z:%6.2f\r\n", x, y, z)
 		time.Sleep(100 * time.Millisecond)
+
+		// 出直結果
+		// X: 0.05 Y: -0.02 Z: -0.97
+		// X: 0.04 Y: -0.02 Z: -0.96
+		// X: 0.05 Y: -0.02 Z: -0.96
+		// X: 0.05 Y: -0.02 Z: -0.97
 	}
 }
 
 func readAcceleration(l, h byte) float32 {
 	// uint8の値を組み合わせてuint16の変数を作成
 	a := uint16(l) | uint16(h)<<8
-	
+
 	// 符号付き16bitとして解釈（2の補数）
 	signed := int16(a)
-	
+
 	//0x4000==1gのため0x4000で割る
 	return float32(signed) / 0x4000
 
-	// 例: 
+	// 例:
 	// l = 0x34
 	// h = 0x12
 
