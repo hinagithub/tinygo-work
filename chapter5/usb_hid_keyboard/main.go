@@ -12,6 +12,10 @@ import (
 )
 
 func main() {
+	echoTinyGo()
+}
+
+func echoTinyGo() {
 
 	button := machine.BUTTON
 	button.Configure(machine.PinConfig{Mode: machine.PinInputPulldown})
