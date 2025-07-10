@@ -50,3 +50,8 @@ func main() {
 	fmt.Printf("Read Display MADCTL: % X\r\n", buf)
 	select {}
 }
+
+// 出力結果
+// Read Display MADCTL : 0BAC
+// Memory Access Control: 36 AC
+// Read Display MADCTL: AC 00
