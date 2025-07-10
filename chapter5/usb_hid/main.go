@@ -1,6 +1,7 @@
 // USB_HID
 // Universal Serial Bus Human Interface Device
 // 人間のインターフェースデバイス = キーボードやマウス
+// wioターミナルをキーボードとして認識する
 
 package main
 
@@ -22,7 +23,7 @@ func main() {
 		if !button.Get() {
 			kb.Write([]byte("echo "))
 
-			// Tigy
+			// Tiny
 			kb.Down(keyboard.KeyModifierShift) // Shiftキー押下
 			kb.Press(keyboard.KeyT)
 			kb.Up(keyboard.KeyModifierShift) // Shiftキーを離す
