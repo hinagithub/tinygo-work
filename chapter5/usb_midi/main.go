@@ -25,6 +25,10 @@ import (
 )
 
 func main() {
+
+	// 以下のURLにアクセスしSendボタンを押下するとバックライトがトグルされる
+	// https://sago35.github.io/SendReceive/
+
 	led := machine.LCD_BACKLIGHT
 	led.Configure(machine.PinConfig{Mode: machine.PinOutput})
 	m := midi.New()
@@ -41,4 +45,5 @@ func main() {
 		m.NoteOff(0, 0, midi.C4, 0x40)
 		time.Sleep(time.Millisecond * 1000)
 	}
+
 }
