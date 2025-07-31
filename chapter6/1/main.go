@@ -3,14 +3,13 @@ package main
 import (
 	"image/color"
 	"machine"
+	"math"
 	"time"
 
 	"tinygo.org/x/drivers/ili9341"
-	// ""
 )
 
 func main() {
-	// バックライトをON（これが重要でした！）
 	backlight := machine.LCD_BACKLIGHT
 	backlight.Configure(machine.PinConfig{Mode: machine.PinOutput})
 	backlight.High()
@@ -36,71 +35,42 @@ func main() {
 	time.Sleep(100 * time.Millisecond)
 
 	// 色定義
-	black := color.RGBA{R: 0, G: 0, B: 0, A: 255}
+	// black := color.RGBA{R: 0, G: 0, B: 0, A: 255}
 	white := color.RGBA{R: 255, G: 255, B: 255, A: 255}
 	pink := color.RGBA{R: 255, G: 192, B: 203, A: 255}
+	blue := color.RGBA{R: 173, G: 216, B: 230, A: 255}
+	yellow := color.RGBA{R: 255, G: 255, B: 150, A: 255}
+	purple := color.RGBA{R: 221, G: 160, B: 221, A: 255}
+	// orange := color.RGBA{R: 255, G: 204, B: 153, A: 255}
+	// green := color.RGBA{R: 144, G: 238, B: 144, A: 255}
 
-	// 黒い背景
-	display.FillScreen(black)
+	display.FillScreen(white)
 
-	// 白い三角形を描画
-	for y := int16(10); y < 100; y++ {
-		for x := int16(10); x <= 100; x++ {
-			if x < y {
-				display.SetPixel(x, y, white)
-			}
+	// 四角を書く
+	for i := int16(0); i < 100; i++ {
+		for j := int16(0); j < 200; j++ {
+			display.SetPixel(i, j, yellow)
 		}
 	}
 
-	// display.SetPixel(230, 30, pink)
-	// display.SetPixel(230, 31, pink)
-	// display.SetPixel(230, 32, pink)
-	// display.SetPixel(230, 33, pink)
-
-	// ハートの中心座標
-	centerX := int16(160)
-	centerY := int16(120)
-
-	// ハートの形を描画
-	for y := int16(-10); y <= 6; y++ {
-		for x := int16(-15); x <= 15; x++ {
-			// ハート形の方程式を使用
-			// 左の円
-			leftCircle := (x+5)*(x+5) + (y-2)*(y-2)
-			// 右の円
-			rightCircle := (x-5)*(x-5) + (y-2)*(y-2)
-			// 下の三角部分
-			triangle := (x*x+2*y+2*y*y >= 0)
-
-			if (leftCircle <= 25 || rightCircle <= 25) && triangle {
-				display.SetPixel(centerX+x, centerY+y, pink)
-			}
-		}
+	// 縦線を引く
+	for x := int16(0); x < 240; x++ {
+		display.SetPixel(x, 160, purple)
 	}
 
+	// 横線を引く
+	for y := int16(0); y < 320; y++ {
+		display.SetPixel(120, y, blue)
+	}
+
+	// ハートを書く
+	centerX := float32(160)
+	centerY := float32(120)
+	size := float32(5)
+	for t := float32(0); t <= 2*3.14159; t += 0.01 {
+		x := size * 16 * float32(math.Pow(math.Sin(float64(t)), 3))
+		y := -(size*13*float32(math.Cos(float64(t))) - size*5*float32(math.Cos(2*float64(t))) - size*2*float32(math.Cos(3*float64(t))) - float32(math.Cos(4*float64(t))))
+		display.SetPixel(int16(centerY+y), int16(centerX+x), pink)
+	}
 	select {}
-}
-
-// ピンクのハートを描画
-func drawHeart() {
-	// ハートの中心座標
-	centerX := int16(160)
-	centerY := int16(120)
-
-	// ハートの形を描画
-	for y := int16(-10); y <= 6; y++ {
-		for x := int16(-15); x <= 15; x++ {
-			// ハート形の方程式を使用
-			// 左の円
-			leftCircle := (x+5)*(x+5) + (y-2)*(y-2)
-			// 右の円
-			rightCircle := (x-5)*(x-5) + (y-2)*(y-2)
-			// 下の三角部分
-			triangle := (x*x+2*y+2*y*y >= 0)
-
-			if (leftCircle <= 25 || rightCircle <= 25) && triangle {
-				display.SetPixel(centerX+x, centerY+y, pink)
-			}
-		}
-	}
 }
