@@ -1,5 +1,13 @@
 ## tinydisplayのダウンロードコマンド
 
+Makefileで実行
+```
+make tinydisplay-download
+make tinydisplay-run
+```
+
+もしくは手動で
+
 ```
 
 # zipダウンロード
