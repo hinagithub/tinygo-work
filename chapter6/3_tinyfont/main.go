@@ -21,7 +21,7 @@ func main() {
 	tinyfont.WriteLine(display, font, 5, 50, "tinyfont", black) // 英語
 	tinyfont.WriteLine(display, font, 5, 100, font.Name, black) // フォント名
 	tinyfont.WriteLine(display, font, 5, 150, "こんにちは", black)   // 日本語
-	tinyfont.WriteLine(display, font, 5, 150, "さようなら", black)   // 日本語
+	tinyfont.WriteLine(display, font, 5, 200, "おはよう", black)    // 日本語
 
 	// プログラム終了を防ぐ
 	select {}
