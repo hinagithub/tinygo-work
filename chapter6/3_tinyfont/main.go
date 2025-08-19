@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"image/color"
+	"time"
 
 	"github.com/sago35/tinydisplay/examples/initdisplay"
 	"tinygo.org/x/tinyfont"
@@ -57,13 +58,25 @@ func writeMultipleTimes() {
 		tinyfont.WriteLine(display, &freeserif.Regular18pt7b, 10, 50, str, black)
 
 		// ② 画面を白く塗ってから書き込む。チラつく
-		display.FillRectangle(0x50, 320, 50, white)
+		display.FillRectangle(0, 50, 320, 50, white)
 		tinyfont.WriteLine(display, &freeserif.Regular18pt7b, 10, 50, str, black)
 
 		// ③ Labelを使う
 		label.FillScreen(white)
 		tinyfont.WriteLine(label, &freeserif.Regular18pt7b, 10, 30, str, black)
-		display.DrawRGBBitmap(0x100, label.Buf, label.W, label.H)
+		// バッファの内容をディスプレイにコピー
+		for y := int16(0); y < label.H; y++ {
+			for x := int16(0); x < label.W; x++ {
+				pixel := label.Buf[x+y*label.W]
+				// RGB565からRGBAに変換
+				r := uint8((pixel >> 11) << 3)
+				g := uint8(((pixel >> 5) & 0x3F) << 2)
+				b := uint8((pixel & 0x1F) << 3)
+				c := color.RGBA{R: r, G: g, B: b, A: 255}
+				display.SetPixel(x, y+100, c)
+			}
+		}
+		time.Sleep(1 * time.Second)
 
 	}
 }
@@ -73,7 +86,7 @@ type Label struct {
 	W, H int16
 }
 
-func NewLabel(w, h, int16) *Label {
+func NewLabel(w, h int16) *Label {
 	return &Label{
 		Buf: make([]uint16, w*h),
 		W:   w,
@@ -81,6 +94,33 @@ func NewLabel(w, h, int16) *Label {
 	}
 }
 
-func (l *Label) Size() (x, y, int16) {
+func (l *Label) Size() (x, y int16) {
 	return l.W, l.H
+}
+
+func (l *Label) SetPixel(x, y int16, c color.RGBA) {
+	l.Buf[x+y*l.W] = RGBATo565(c)
+}
+
+func (l *Label) Display() error {
+	// 何もしない（バッファ描画は別途DrawBで行う。インターフェースを満たすためだけに定義）
+	return nil
+}
+
+func (l *Label) FillScreen(c color.RGBA) {
+	for i := range l.Buf {
+		l.Buf[i] = RGBATo565(c)
+	}
+}
+
+// 24bit RGB → 16bit RGB565に圧縮
+func RGBATo565(c color.RGBA) uint16 {
+	// 例
+	// 黒 (0, 0, 0, 255) → 0x0000
+	// 白 (255, 255, 255, 255) → 0xFFFF
+	// 赤 (255, 0, 0, 255) → 0xF800
+	r, g, b, _ := c.RGBA()
+	return uint16((r & 0xF800) +
+		((g & 0xFC00) >> 5) +
+		((b & 0xF800) >> 11))
 }
