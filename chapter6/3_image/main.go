@@ -4,20 +4,56 @@ import (
 	"bytes"
 	"fmt"
 	"image/color"
-	"image/jpeg"
+	"image/png"
 	"log"
+	"machine"
 	"os"
 
-	"github.com/sago35/tinydisplay/examples/initdisplay"
+	"tinygo.org/x/drivers/ili9341"
 )
 
 func main() {
-	img2byte()
-	// small()
+	// img2byte()
+	// testDisplay()
+	samll()
+}
+
+// ディスプレイテスト用の関数
+func testDisplay() {
+	// ディスプレイを初期化
+	machine.SPI3.Configure(machine.SPIConfig{
+		Frequency: 40000000,
+		SCK:       machine.LCD_SCK_PIN,
+		SDO:       machine.LCD_SDO_PIN,
+		SDI:       machine.LCD_SDI_PIN,
+	})
+
+	display := ili9341.NewSPI(
+		*machine.SPI3,
+		machine.LCD_DC,
+		machine.LCD_SS_PIN,
+		machine.LCD_RESET,
+	)
+	display.Configure(ili9341.Config{})
+
+	// バックライトをオンにする
+	machine.LCD_BACKLIGHT.Configure(machine.PinConfig{Mode: machine.PinOutput})
+	machine.LCD_BACKLIGHT.High()
+
+	// 画面をクリア（青色で塗りつぶし）
+	display.FillScreen(color.RGBA{0, 0, 255, 255})
+
+	// 中央に赤い四角形を描画
+	for y := int16(100); y < 140; y++ {
+		for x := int16(140); x < 180; x++ {
+			display.SetPixel(x, y, color.RGBA{255, 0, 0, 255})
+		}
+	}
+
+	select {}
 }
 
 // 画像サイズが十分に小さい場合
-
 func samll() {
 	// img2byte()
 	tiny_img := []byte{
@@ -72,8 +108,32 @@ func samll() {
 		0x73, 0xA0, 0x8E, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44, 0xAE,
 		0x42, 0x60, 0x82,
 	}
-	display := initdisplay.InitDisplay()
-	img, err := jpeg.Decode(bytes.NewReader(tiny_img))
+
+	// ディスプレイを初期化
+	machine.SPI3.Configure(machine.SPIConfig{
+		Frequency: 40000000,
+		SCK:       machine.LCD_SCK_PIN,
+		SDO:       machine.LCD_SDO_PIN,
+		SDI:       machine.LCD_SDI_PIN,
+	})
+
+	display := ili9341.NewSPI(
+		*machine.SPI3,
+		machine.LCD_DC,
+		machine.LCD_SS_PIN,
+		machine.LCD_RESET,
+	)
+
+	display.Configure(ili9341.Config{})
+
+	// バックライトをオンにする
+	machine.LCD_BACKLIGHT.Configure(machine.PinConfig{Mode: machine.PinOutput})
+	machine.LCD_BACKLIGHT.High()
+
+	// 画面をクリア（白色で塗りつぶし）
+	display.FillScreen(color.RGBA{255, 255, 255, 255})
+
+	img, err := png.Decode(bytes.NewReader(tiny_img))
 	if err != nil {
 		log.Fatal(err)
 	}
