@@ -2,20 +2,93 @@ package main
 
 import (
 	"bytes"
+	_ "embed"
 	"fmt"
 	"image/color"
 	"image/png"
 	"log"
 	"machine"
 	"os"
+	"time"
 
 	"tinygo.org/x/drivers/ili9341"
 )
 
+//go:embed gopher.png
+var binaryData []byte
+
 func main() {
-	// img2byte()
-	// testDisplay()
-	samll()
+	time.Sleep(2 * time.Second) // USB CDC接続待ち
+	println(string(binaryData))
+
+	// 画像を表示
+	embedImage()
+}
+
+func embedImage() {
+	// go:embedで埋め込まれた画像データを使用
+	// binaryDataはグローバル変数として定義済み
+
+	// デバッグ：埋め込みデータのサイズを確認
+
+	// go:embed gopher.png
+	fmt.Printf("Embedded data size: %d bytes\n", len(binaryData))
+
+	if len(binaryData) == 0 {
+		fmt.Println("Error: No embedded data found")
+		return
+	}
+
+	// ディスプレイを初期化
+	machine.SPI3.Configure(machine.SPIConfig{
+		Frequency: 40000000,
+		SCK:       machine.LCD_SCK_PIN,
+		SDO:       machine.LCD_SDO_PIN,
+		SDI:       machine.LCD_SDI_PIN,
+	})
+
+	display := ili9341.NewSPI(
+		*machine.SPI3,
+		machine.LCD_DC,
+		machine.LCD_SS_PIN,
+		machine.LCD_RESET,
+	)
+	display.Configure(ili9341.Config{})
+
+	// バックライトをオンにする
+	machine.LCD_BACKLIGHT.Configure(machine.PinConfig{Mode: machine.PinOutput})
+	machine.LCD_BACKLIGHT.High()
+
+	// 画面をクリア（白色で塗りつぶし）
+	display.FillScreen(color.RGBA{255, 255, 255, 255})
+
+	// 埋め込まれた画像をデコード
+	img, err := png.Decode(bytes.NewReader(binaryData))
+	if err != nil {
+		fmt.Printf("PNG decode error: %v\n", err)
+		// エラーの場合は赤い四角形を表示
+		for y := int16(50); y < 100; y++ {
+			for x := int16(50); x < 100; x++ {
+				display.SetPixel(x, y, color.RGBA{255, 0, 0, 255})
+			}
+		}
+		select {}
+	}
+
+	fmt.Printf("Image size: %dx%d\n", img.Bounds().Max.X, img.Bounds().Max.Y)
+
+	// 画像を描画
+	for y := 0; y < img.Bounds().Max.Y; y++ {
+		for x := 0; x < img.Bounds().Max.X; x++ {
+			r, g, b, _ := img.At(x, y).RGBA()
+			display.SetPixel(int16(x), int16(y), color.RGBA{
+				R: uint8(r >> 8), G: uint8(g >> 8),
+				B: uint8(b >> 8), A: uint8(0xFF),
+			})
+		}
+	}
+
+	select {}
 }
 
 // ディスプレイテスト用の関数
@@ -147,6 +220,38 @@ func samll() {
 			})
 		}
 	}
+	select {}
+}
+
+// 320x240の画像を画面いっぱいに表示する関数
+func displayFullScreen() {
+	// ここに320x240のバイト配列を配置
+	// fullscreen_img := []byte{ ... }
+
+	// ディスプレイを初期化
+	machine.SPI3.Configure(machine.SPIConfig{
+		Frequency: 40000000,
+		SCK:       machine.LCD_SCK_PIN,
+		SDO:       machine.LCD_SDO_PIN,
+		SDI:       machine.LCD_SDI_PIN,
+	})
+
+	display := ili9341.NewSPI(
+		*machine.SPI3,
+		machine.LCD_DC,
+		machine.LCD_SS_PIN,
+		machine.LCD_RESET,
+	)
+	display.Configure(ili9341.Config{})
+
+	// バックライトをオンにする
+	machine.LCD_BACKLIGHT.Configure(machine.PinConfig{Mode: machine.PinOutput})
+	machine.LCD_BACKLIGHT.High()
+
+	// 画面をクリア
+	display.FillScreen(color.RGBA{0, 0, 0, 255})
+
+	fmt.Println("320x240の画像を準備してください")
 	select {}
 }
 
