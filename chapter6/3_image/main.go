@@ -14,7 +14,9 @@ import (
 	"tinygo.org/x/drivers/ili9341"
 )
 
-//go:embed gopher.png
+// gopher.pngは大きすぎてOut of Memoryエラーになる
+
+//go:embed tiny_img.png
 var binaryData []byte
 
 func main() {
@@ -23,15 +25,11 @@ func main() {
 
 	// 画像を表示
 	embedImage()
+	// samll()
 }
 
 func embedImage() {
-	// go:embedで埋め込まれた画像データを使用
-	// binaryDataはグローバル変数として定義済み
-
-	// デバッグ：埋め込みデータのサイズを確認
-
-	// go:embed gopher.png
+	// グローバルのbinaryData（go:embedで読み込まれたデータ）を使用
 	fmt.Printf("Embedded data size: %d bytes\n", len(binaryData))
 
 	if len(binaryData) == 0 {
@@ -46,13 +44,13 @@ func embedImage() {
 		SDO:       machine.LCD_SDO_PIN,
 		SDI:       machine.LCD_SDI_PIN,
 	})
-
 	display := ili9341.NewSPI(
 		*machine.SPI3,
 		machine.LCD_DC,
 		machine.LCD_SS_PIN,
 		machine.LCD_RESET,
 	)
+
 	display.Configure(ili9341.Config{})
 
 	// バックライトをオンにする
@@ -62,22 +60,11 @@ func embedImage() {
 	// 画面をクリア（白色で塗りつぶし）
 	display.FillScreen(color.RGBA{255, 255, 255, 255})
 
-	// 埋め込まれた画像をデコード
 	img, err := png.Decode(bytes.NewReader(binaryData))
 	if err != nil {
-		fmt.Printf("PNG decode error: %v\n", err)
-		// エラーの場合は赤い四角形を表示
-		for y := int16(50); y < 100; y++ {
-			for x := int16(50); x < 100; x++ {
-				display.SetPixel(x, y, color.RGBA{255, 0, 0, 255})
-			}
-		}
-		select {}
+		log.Fatal(err)
 	}
 
-	fmt.Printf("Image size: %dx%d\n", img.Bounds().Max.X, img.Bounds().Max.Y)
-
-	// 画像を描画
 	for y := 0; y < img.Bounds().Max.Y; y++ {
 		for x := 0; x < img.Bounds().Max.X; x++ {
 			r, g, b, _ := img.At(x, y).RGBA()
@@ -87,8 +74,8 @@ func embedImage() {
 			})
 		}
 	}
-
 	select {}
+
 }
 
 // ディスプレイテスト用の関数
