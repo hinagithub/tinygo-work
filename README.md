@@ -9,3 +9,8 @@
 
 ### VSCodeでコード補完が効かない(machine.LEDなど)
 `.vscode/settings.json`でGOROOTをTinyGoのパスに設定して解決
+
+
+# 参考
+
+[Woman Who Goのリポジトリ](https://github.com/WomenWhoGoTokyo/book-reading-party/tree/master/learn-embedded-development-with-tinygo)
