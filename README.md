@@ -18,26 +18,15 @@ Wio Terminalで `github.com/sago35/tinydisplay/examples/initdisplay` を使う�
 ```
 cannot use machine.SPI3 (variable of type *machine.SPI) as machine.SPI value in argument to ili9341.NewSPI
 ```
-のようなエラーが出る場合は、tinydisplayライブラリのバージョンが古い可能性があります。
+のようなエラーが出る場合は、tinydisplayライブラリのバージョンが古い可能性がある
 
-### 解決手順
-
-1. プロジェクトディレクトリで以下を実行し、tinydisplayを最新版にアップデートします。
+プロジェクトディレクトリで以下を実行し、tinydisplayを最新版にアップデートすればいい
 
 ```sh
-cd chapter6/5_ili9341
-# または該当ディレクトリへ移動
-
 go get -u github.com/sago35/tinydisplay
-
 go mod tidy
 ```
 
-2. その後、通常通り `tinygo build` や `tinygo flash` でビルド・書き込みが可能になります。
-
----
-
-この方法で、initdisplayを使ったまま最新のTinyGo環境で動作させることができます。
 
 
 # 参考
