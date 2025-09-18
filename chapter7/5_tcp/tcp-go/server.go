@@ -7,8 +7,8 @@ import (
 )
 
 var (
-	serverIP string
-	port     int
+	serverIP = "127.0.0.1"
+	port     = 8080
 )
 
 func main() {

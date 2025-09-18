@@ -8,6 +8,11 @@ import (
 	"os"
 )
 
+var (
+	serverIP = "127.0.0.1"
+	port     = 8080
+)
+
 func main() {
 	conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", serverIP, port))
 	if err != nil {
