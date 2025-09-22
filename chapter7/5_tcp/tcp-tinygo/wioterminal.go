@@ -1,53 +1,104 @@
+// This example opens a TCP connection and sends some data, for the purpose of
+// testing speed and connectivity.
+//
+// You can open a server to accept connections from this program using:
+//
+// nc -lk 8080
+
+//go:build ninafw || wioterminal || challenger_rp2040 || comboat_fw
+
 package main
 
 import (
+	"bytes"
 	"fmt"
-	"image/color"
+	"log"
 	"machine"
+	"net"
 	"time"
 
-	"tinygo.org/x/drivers/ili9341"
-	"tinygo.org/x/tinyfont"
-	"tinygo.org/x/tinyfont/freemono"
+	"tinygo.org/x/drivers/netlink"
+	"tinygo.org/x/drivers/netlink/probe"
 )
 
 var (
-	ssid     = "tullys_Wi-Fi"
-	password = ""
-	serverIP = "127.0.0.1"
-	port     = 8080
+	ssid = "tullys_Wi-Fi"
+	pass = ""
+	addr = "192.168.64.1:8080"
 )
 
+var buf = &bytes.Buffer{}
+
 func main() {
-	// LCD初期化
-	machine.SPI3.Configure(machine.SPIConfig{
-		SCK:       machine.LCD_SCK_PIN,
-		SDO:       machine.LCD_SDO_PIN,
-		SDI:       machine.LCD_SDI_PIN,
-		Frequency: 48000000,
+
+	// PC側のターミナルが開くまで待機
+	waitSerial()
+
+	link, _ := probe.Probe()
+
+	err := link.NetConnect(&netlink.ConnectParams{
+		Ssid:       ssid,
+		Passphrase: pass,
 	})
-	backlight := machine.LCD_BACKLIGHT
-	backlight.Configure(machine.PinConfig{Mode: machine.PinOutput})
-	display := ili9341.NewSPI(
-		machine.SPI3,
-		machine.LCD_DC,
-		machine.LCD_SS_PIN,
-		machine.LCD_RESET,
-	)
-	display.Configure(ili9341.Config{Rotation: ili9341.Rotation270})
-	display.FillScreen(color.RGBA{0, 0, 0, 255})
-	backlight.High()
-
-	white := color.RGBA{255, 255, 255, 255}
-	tinyfont.WriteLine(display, &freemono.Regular12pt7b, 10, 30, "Wi-Fi SSID: "+ssid, white)
-	tinyfont.WriteLine(display, &freemono.Regular12pt7b, 10, 60, "TCP Server: "+serverIP, white)
-	tinyfont.WriteLine(display, &freemono.Regular12pt7b, 10, 90, "Port: "+fmt.Sprintf("%d", port), white)
-	tinyfont.WriteLine(display, &freemono.Regular12pt7b, 10, 120, "Send: hello from tinygo", white)
-	tinyfont.WriteLine(display, &freemono.Regular12pt7b, 10, 150, "※通信部分は未実装", white)
-
-	// ここにRTL8720DN制御によるTCP通信実装を追加予定
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	for {
-		time.Sleep(time.Second)
+		sendBatch()
+		time.Sleep(500 * time.Millisecond)
+	}
+}
+
+func sendBatch() {
+
+	// make TCP connection
+	message("---------------\r\nDialing TCP connection")
+	conn, err := net.Dial("tcp", addr)
+	for ; err != nil; conn, err = net.Dial("tcp", addr) {
+		message(err.Error())
+		time.Sleep(5 * time.Second)
+	}
+
+	n := 0
+	w := 0
+	start := time.Now()
+
+	// send data
+	message("Sending data")
+
+	for i := 0; i < 1000; i++ {
+		buf.Reset()
+		fmt.Fprint(buf,
+			"\r---------------------------- i == ", i, " ----------------------------"+
+				"\r---------------------------- i == ", i, " ----------------------------")
+		if w, err = conn.Write(buf.Bytes()); err != nil {
+			println("error:", err.Error(), "\r")
+			break
+		}
+		n += w
+	}
+
+	buf.Reset()
+	ms := time.Now().Sub(start).Milliseconds()
+	fmt.Fprint(buf, "\nWrote ", n, " bytes in ", ms, " ms\r\n")
+	message(buf.String())
+
+	if _, err := conn.Write(buf.Bytes()); err != nil {
+		println("error:", err.Error(), "\r")
+	}
+
+	println("Disconnecting TCP...")
+	conn.Close()
+}
+
+func message(msg string) {
+	println(msg, "\r")
+}
+
+// Wait for user to open serial console
+func waitSerial() {
+	for !machine.Serial.DTR() { // DTR = Data Terminal Ready
+		time.Sleep(100 * time.Millisecond)
 	}
 }
